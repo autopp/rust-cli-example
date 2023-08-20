@@ -1,0 +1,34 @@
+name: release-pr
+
+on:
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  test-and-build:
+    uses: ./.github/workflows/test.yml
+    if: "startsWith(github.head_ref, 'release/') && !github.event.pull_request.head.fork"
+  prepare-release:
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    runs-on: ubuntu-latest
+    needs: test-and-build
+    steps:
+    - uses: actions/checkout@v3
+    - uses: dtolnay/rust-toolchain@stable
+    - name: Create Tag
+      run: |
+        VERSION=${GITHUB_HEAD_REF#release/}
+        echo "VERSION=${VERSION}"
+        hub release --include-drafts -f "%t:%S%n"
+        if hub release --include-drafts -f "%t:%S%n" | grep -x -F "${VERSION}:draft" >/dev/null; then
+          echo Delete existing release
+          gh release delete "${VERSION}"
+        fi
+        if git fetch origin tag "${VERSION}" >/dev/null; then
+          echo Delete existing tag
+          git tag -d "${VERSION}"
+          git push origin :"${VERSION}"
+        fi
+        # git tag "${VERSION}"
+        # git push origin "${VERSION}"
