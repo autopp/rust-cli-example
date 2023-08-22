@@ -41,6 +41,8 @@ jobs:
           - target: aarch64-apple-darwin
             os: macos-latest
     runs-on: ${{ matrix.os }}
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     needs: prepare-release
     steps:
       - uses: actions/checkout@v3
