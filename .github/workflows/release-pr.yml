@@ -18,17 +18,17 @@ jobs:
     - uses: dtolnay/rust-toolchain@stable
     - name: Create Tag
       run: |
-        VERSION=${GITHUB_HEAD_REF#release/}
-        echo "VERSION=${VERSION}"
+        VERSION=$(cargo metadata --format-version=1 --no-deps | jq -r '.packages[0].version')
+        TAG="v${VERSION}"
+        echo "VERSION=${VERSION} TAG=${TAG}"
         hub release --include-drafts -f "%t:%S%n"
-        if hub release --include-drafts -f "%t:%S%n" | grep -x -F "${VERSION}:draft" >/dev/null; then
+        if hub release --include-drafts -f "%t:%S%n" | grep -x -F "${TAG}:draft" >/dev/null; then
           echo Delete existing release
-          gh release delete "${VERSION}"
+          gh release delete "${TAG}"
         fi
-        if git fetch origin tag "${VERSION}" >/dev/null; then
+        if git fetch origin tag "${TAG}" >/dev/null; then
           echo Delete existing tag
-          git tag -d "${VERSION}"
-          git push origin :"${VERSION}"
+          git tag -d "${TAG}"
+          git push origin :"${TAG}"
         fi
-        # git tag "${VERSION}"
-        # git push origin "${VERSION}"
+        gh release create "${TAG}" --title "${TAG}" --draft
