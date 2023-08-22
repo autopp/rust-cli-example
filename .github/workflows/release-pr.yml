@@ -55,4 +55,4 @@ jobs:
           TAG="v${VERSION}"
           cargo build --release --target=${{ matrix.target }}
           mv target/${{ matrix.target }}/release/rust-cli-example rust-cli-example-${{ matrix.target }}
-          gh release upload "${TAG}" rust-cli-example-${{ matrix.target }}
+          gh release upload "${TAG}" rust-cli-example-${{ matrix.target }} --clobber
