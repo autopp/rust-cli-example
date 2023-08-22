@@ -6,8 +6,14 @@ on:
 jobs:
   test-and-build:
     runs-on: ubuntu-latest
+    outputs:
+      VERSION: ${{ steps.extract-version.outputs.VERSION }}
+      TAG: ${{ steps.extract-version.outputs.TAG }}
     steps:
       - uses: actions/checkout@v3
       - uses: dtolnay/rust-toolchain@stable
+      - id: extract-version
+        run: './.github/scripts/extract-version'
+      - run: echo VERSION=${{ steps.extract-version.outputs.VERSION }} TAG=${{ steps.extract-version.outputs.TAG }}
       - run: cargo test
       - run: cargo build --release

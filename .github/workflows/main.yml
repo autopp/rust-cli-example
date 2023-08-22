@@ -6,3 +6,8 @@ on:
 jobs:
   test-and-build:
     uses: ./.github/workflows/test.yml
+  show-meta:
+    needs: test-and-build
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo VERSION=${{ needs.test-and-build.outputs.VERSION }} TAG=${{ needs.test-and-build.outputs.TAG }}

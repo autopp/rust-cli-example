@@ -1,0 +1,6 @@
+#!/bin/bash
+
+set -eu -o pipefail
+
+echo "VERSION=$(cargo metadata --format-version=1 --no-deps | jq -r '.packages[0].version')" >> "$GITHUB_OUTPUT"
+echo "TAG=v${VERSION}" >> "$GITHUB_OUTPUT"
