@@ -17,6 +17,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
       - id: extract-version
         run: './.github/scripts/extract-version'
       - run: echo VERSION=${{ steps.extract-version.outputs.version }} TAG=${{ steps.extract-version.outputs.tag }}
